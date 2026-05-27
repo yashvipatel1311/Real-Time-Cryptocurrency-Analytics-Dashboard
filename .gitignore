@@ -1,0 +1,51 @@
+# ==============================================================================
+# Crypto Analytics Platform — .gitignore
+# ==============================================================================
+
+# --- Environment Variables (NEVER commit secrets) ---
+.env
+.env.local
+.env.production
+
+# --- Python Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Data Files (generated at runtime) ---
+data/raw/*.json
+data/processed/*.csv
+data/exports/*.csv
+logs/*.log
+
+# Keep directories via .gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/exports/.gitkeep
+!logs/.gitkeep
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Pytest ---
+.pytest_cache/
+htmlcov/
+.coverage
