@@ -55,15 +55,31 @@ def get_engine():
 
     if _engine is None:
         try:
-            _engine = create_engine(
-                Config.DATABASE_URL,
-                pool_size=5,          # Keep 5 connections ready in the pool
-                max_overflow=10,      # Allow up to 10 extra connections when busy
-                pool_timeout=30,      # Wait 30 s for a connection before raising
-                pool_recycle=1800,    # Recycle connections every 30 minutes
-                echo=False,           # Set True to log every SQL statement (debug)
-            )
-            logger.info("SQLAlchemy engine created successfully.")
+            db_url = Config.DATABASE_URL
+
+            # SQLite does not support connection pooling — use StaticPool
+            # to avoid warnings about pool_size, max_overflow, etc.
+            if db_url.startswith("sqlite"):
+                from sqlalchemy.pool import StaticPool
+
+                _engine = create_engine(
+                    db_url,
+                    connect_args={"check_same_thread": False},
+                    poolclass=StaticPool,
+                    echo=False,
+                )
+                logger.info("SQLAlchemy engine created (SQLite mode).")
+            else:
+                # PostgreSQL / other production databases — use full pooling
+                _engine = create_engine(
+                    db_url,
+                    pool_size=5,          # Keep 5 connections ready in the pool
+                    max_overflow=10,      # Allow up to 10 extra connections when busy
+                    pool_timeout=30,      # Wait 30 s for a connection before raising
+                    pool_recycle=1800,    # Recycle connections every 30 minutes
+                    echo=False,           # Set True to log every SQL statement (debug)
+                )
+                logger.info("SQLAlchemy engine created (PostgreSQL mode).")
         except Exception as exc:
             logger.warning("Failed to create SQLAlchemy engine: %s", exc)
             raise

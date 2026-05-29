@@ -279,6 +279,15 @@ GRANT ALL PRIVILEGES ON DATABASE crypto_analytics TO crypto_user;
 createdb -U postgres crypto_analytics
 ```
 
+### Option D: SQLite Fallback (Zero Setup)
+
+If you don't have PostgreSQL installed or want a quick setup without a database server, you can use SQLite.
+Simply configure `DATABASE_URL` in your `.env` file as:
+```env
+DATABASE_URL=sqlite:///crypto_analytics.db
+```
+This will automatically create a local `crypto_analytics.db` file in your project root on the first run.
+
 > **📝 Note:** Tables are created automatically when you run the platform for the first time. You don't need to create tables manually!
 
 ---
@@ -314,8 +323,9 @@ Create a `.env` file in the project root with the following variables:
 # ============================================
 # DATABASE CONFIGURATION
 # ============================================
-# Format: postgresql://username:password@host:port/database_name
-DATABASE_URL=postgresql://crypto_user:your_password@localhost:5432/crypto_analytics
+# Format (PostgreSQL): postgresql://username:password@host:port/database_name
+# Format (SQLite):     sqlite:///crypto_analytics.db
+DATABASE_URL=sqlite:///crypto_analytics.db
 
 # ============================================
 # API CONFIGURATION
@@ -366,6 +376,20 @@ DATA_EXPORTS_DIR=data/exports
 # Run the full pipeline once (fetch → analyze → export)
 python main.py
 ```
+
+> **💡 Windows Console Unicode Tip:** If you encounter encoding errors (e.g., `UnicodeEncodeError: 'charmap' codec can't encode character...`) when running scripts on Windows, set the terminal output encoding to UTF-8 before running:
+>
+> **In PowerShell:**
+> ```powershell
+> $env:PYTHONIOENCODING="utf-8"
+> python main.py
+> ```
+>
+> **In Command Prompt:**
+> ```cmd
+> set PYTHONIOENCODING=utf-8
+> python main.py
+> ```
 
 ### All Run Modes
 

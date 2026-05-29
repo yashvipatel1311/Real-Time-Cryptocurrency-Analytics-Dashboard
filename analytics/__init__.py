@@ -3,6 +3,7 @@ Analytics Module - Crypto Analytics Platform
 =============================================
 
 This module provides analytical tools for cryptocurrency data including:
+    - Data cleaning and preprocessing (standardisation, deduplication, outliers)
     - KPI calculations (returns, growth, market dominance)
     - Trend analysis (SMA, EMA, momentum)
     - Volatility analysis (Bollinger Bands, risk metrics)

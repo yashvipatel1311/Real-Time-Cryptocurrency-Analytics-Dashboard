@@ -32,12 +32,17 @@ env/
 data/raw/*.json
 data/processed/*.csv
 data/exports/*.csv
+data/exports/*.json
+data/charts/*.html
+*.db
+*.sqlite3
 logs/*.log
 
 # Keep directories via .gitkeep
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/exports/.gitkeep
+!data/charts/.gitkeep
 !logs/.gitkeep
 
 # --- OS Files ---

@@ -165,8 +165,8 @@ def test_database_connection():
       - PostgreSQL is running and accepting connections
       - Our get_engine() function works properly
     """
-    # test_connection() should return True if the database is reachable
-    result = test_connection()
+    # verify_db_connection() should return True if the database is reachable
+    result = verify_db_connection()
 
     assert result is True, (
         "Database connection failed — check that PostgreSQL is running "

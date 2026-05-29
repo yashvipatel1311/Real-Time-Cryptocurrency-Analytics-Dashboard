@@ -233,7 +233,6 @@ def save_historical_to_db(df: pd.DataFrame, coin_id: str) -> int:
                 low_price=safe_float(row.get("low_price"), 0.0),
                 close_price=safe_float(row.get("close_price"), 0.0),
                 volume=safe_float(row.get("volume"), 0.0),
-                market_cap=safe_float(row.get("market_cap"), 0.0),
                 fetched_at=datetime.now(timezone.utc),
             )
             session.add(record)

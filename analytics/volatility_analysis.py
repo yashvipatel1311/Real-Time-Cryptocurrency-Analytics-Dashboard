@@ -111,36 +111,38 @@ def calculate_atr(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
     # Check if high and low prices are available, if not, use close price as proxy
     high_col = "high_price" if "high_price" in df_copy.columns else "close_price"
     low_col = "low_price" if "low_price" in df_copy.columns else "close_price"
-    close_col = "close_price" if "close_price" in df_copy.columns else df_copy.columns[0]
+    
+    # Find close column name
+    if "close_price" in df_copy.columns:
+        close_col = "close_price"
+    elif "price" in df_copy.columns:
+        close_col = "price"
+    else:
+        close_col = df_copy.columns[0]
 
     # Calculate True Range (TR)
-    def compute_tr(group):
-        high = group[high_col]
-        low = group[low_col]
-        close = group[close_col]
-        
-        # Prevent division/empty array errors
-        if len(group) < 2:
-            return pd.Series(0.0, index=group.index)
+    if "coin_id" in df_copy.columns:
+        prev_close = df_copy.groupby("coin_id")[close_col].shift(1)
+    else:
+        prev_close = df_copy[close_col].shift(1)
 
-        prev_close = close.shift(1)
-        
-        tr1 = high - low
-        tr2 = (high - prev_close).abs()
-        tr3 = (low - prev_close).abs()
-        
-        # Maximum of the three ranges
-        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-        return tr
+    high = df_copy[high_col]
+    low = df_copy[low_col]
+
+    tr1 = high - low
+    tr2 = (high - prev_close).abs()
+    tr3 = (low - prev_close).abs()
+
+    # Maximum of the three ranges
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    df_copy["true_range"] = tr
 
     if "coin_id" in df_copy.columns:
-        df_copy["true_range"] = df_copy.groupby("coin_id", group_keys=False).apply(compute_tr)
         df_copy["atr"] = df_copy.groupby("coin_id")["true_range"].transform(lambda x: x.rolling(window=period).mean())
-        df_copy = df_copy.drop(columns=["true_range"])
     else:
-        tr = compute_tr(df_copy)
-        df_copy["atr"] = tr.rolling(window=period).mean()
+        df_copy["atr"] = df_copy["true_range"].rolling(window=period).mean()
 
+    df_copy = df_copy.drop(columns=["true_range"])
     df_copy["atr"] = df_copy["atr"].fillna(0.0)
     return df_copy
 
@@ -197,7 +199,12 @@ def calculate_risk_metrics(df: pd.DataFrame) -> pd.DataFrame:
     if "date" in df_sorted.columns:
         df_sorted = df_sorted.sort_values(by="date")
 
-    price_col = "close_price" if "close_price" in df_sorted.columns else "price"
+    if "close_price" in df_sorted.columns:
+        price_col = "close_price"
+    elif "current_price" in df_sorted.columns:
+        price_col = "current_price"
+    else:
+        price_col = "price"
 
     # Aggregating per coin
     risk_records = []
